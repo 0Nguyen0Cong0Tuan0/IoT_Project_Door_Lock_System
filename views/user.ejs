@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User - Smart Door Lock System</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav>
+        <div class="nav_container">
+            <a href="/home"><p>Smart Door Lock System</p></a>
+        </div>
+    </nav>
+
+    <div class="welcoming_container">
+        <p>WELCOME BACK <%= name %></p>
+    </div>
+
+    <div class="main-product-content">
+        <div class="product-content">
+            <h2>LOCK STATUS</h2>
+            <div class="stateOfLock stateOpen">
+                <div class="stateOfLockText textOpen"></div>
+            </div>
+
+            <h2>AUTO LOCK?</h2>
+            <button class="open-block-btn" id="toggle-lock">YES</button>
+
+            <h2>LOCK PASSWORD REGISTER</h2>
+            <div id="lock-pass">
+                <form action="/register-lock-password" method="POST">
+                    <input type="hidden" name="lockId" value="your-lock-id-here">
+                    <input type="password" name="lockPassword" placeholder="Enter Lock Password" required>
+                    <button type="submit">Register</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="tutorial">
+            <h2>ACCESS HISTORY</h2>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam veritatis dolorum, voluptates ad provident incidunt blanditiis recusandae? Possimus magnam, quisquam voluptas laboriosam accusantium repellendus, esse enim labore consequuntur asperiores suscipit.</p>
+        </div>
+    </div>
+    <script src="/main.js"></script>
+    <script>
+        window.addEventListener('beforeunload', function (e) {
+            // Send a request to the server to handle logout
+            navigator.sendBeacon('/logout');
+        });
+    </script>
+</body>
+</html>

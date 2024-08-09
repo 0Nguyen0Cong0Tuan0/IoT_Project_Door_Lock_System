@@ -1,0 +1,317 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+:root {
+    --color-white: #ebf4f6;
+    --color-blue-light: #37b7c3;
+    --color-blue-dark: #071952;
+    --color-blue-button: #4470e1;
+    --color-blue-button-hover: #4565a0;
+    --color-pure-white: #fff;
+    --color-pure-black: #000;
+    --color-green-open: #4caf50;
+    --color-red-lock: #f44336;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    outline: 0;
+    text-decoration: none;
+    list-style: none;
+    font-family: "Roboto", serif;
+}
+
+body {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--color-blue-dark);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-container {
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid var(--color-white);
+    border-radius: 5px;
+    background-color: var(--color-white);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    font-size: 15px;
+    border: 1px solid var(--color-pure-white);
+    border-radius: 3px;
+}
+
+.submit-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: var(--color-blue-button);
+    color: var(--color-pure-white);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.5s, color 0.5s;
+}
+
+.open-block-btn {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    width: 50%;
+    padding: 10px;
+    margin: 0 auto;
+    background-color: var(--color-white);
+    color: var(--color-black);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.5s, color 0.5s;
+}
+
+.submit-btn:hover {
+    background-color: var(--color-blue-button-hover);
+}
+
+.open-block-btn:hover {
+    background-color: var(--color-pure-black);
+    color: var(--color-pure-white);
+}
+
+p {
+    margin-top: 15px;
+}
+
+a {
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Nav Bar */
+
+nav {
+    background-color: var(--color-blue-light);
+    width: 100vw;
+    height: 5rem;
+}
+
+nav .nav_container {
+    display: flex;
+    width: 80%;
+    height: 100%;
+    margin: 0 auto;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav .nav_container a {
+    font-size: 2rem;
+    text-decoration: none;
+    color: var(--color-pure-white);
+}
+
+nav .nav_buttons {
+    display: flex;
+    gap: 1rem; /* Adds some space between the buttons */
+}
+
+nav .nav_buttons button {
+    padding: 10px;
+    background-color: var(--color-blue-button);
+    color: var(--color-pure-white);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+nav .nav_buttons button a {
+    font-size: 1rem;
+}
+
+nav .nav_buttons button:hover {
+    background-color: var(--color-blue-button-hover);
+}
+
+.welcoming_container {
+    background-color: var(--color-white);
+    width: 100vw;
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.welcoming_container p {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.main-content {
+    flex: 1; /* Ensure the content area takes up remaining space */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem auto; /* Adjusted margin to ensure it's below the welcoming container */
+    color: var(--color-pure-black);
+}
+
+.main-product-content {
+    width: 80%;
+    max-width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    align-items: stretch; /* Ensures cells have the same height */
+    justify-content: center;
+    row-gap: normal;
+    margin: 2rem auto;
+}
+
+.main-product-content h2 {
+    color: var(--color-white);
+    font-weight: bold;
+    font-size: 1.5rem;
+    padding-top: 2rem;
+}
+
+.main-product-content .product-content,
+.main-product-content .tutorial {
+    padding: 2rem;
+}
+
+.main-product-content p {
+    text-align: justify;
+    color: var(--color-white);
+}
+
+.stateOfLock {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+.stateOpen {
+    border: 1px solid var(--color-green-open);
+    background-color: var(--color-green-open);
+}
+
+.stateLock {
+    border: 1px solid var(--color-red-lock);
+    background-color: var(--color-red-lock);
+}
+
+.stateOfLockText {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 150px;
+    font-weight: bold;
+    font-size: 2rem;
+    color: var(--color-pure-white);
+}
+
+.textOpen::before {
+    content: "OPEN";
+}
+
+.textLock::before {
+    content: "LOCK";
+}
+
+.unable-btn {
+    background-color: #cccccc; 
+    color: #666666;           
+    cursor: not-allowed;     
+    opacity: 0.5;             
+}
+
+button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+@media screen and (max-width: 960px) {
+    body {
+        font-size: 1rem;
+    }
+
+    .nav_container p, .welcoming_container p {
+        padding: 8px;
+        font-size: 1.2rem;
+    }
+
+    nav .nav_buttons button {
+        padding: 8px; /* Reduce padding */
+        width: 100%; /* Make buttons full-width */
+        box-sizing: border-box; /* Ensure padding is included in width */
+    }
+
+    nav .nav_buttons button a {
+        font-size: 0.8rem; /* Adjust font size */
+    }
+}
+
+@media screen and (max-width: 800px) {
+    body {
+        font-size: 0.8rem;
+    }
+
+    .nav_container p, .welcoming_container p {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    nav .nav_buttons button {
+        padding: 6px; /* Further reduce padding */
+        width: 100%; /* Make buttons full-width */
+    }
+
+    nav .nav_buttons button a {
+        font-size: 0.6rem; /* Adjust font size */
+    }
+}
+
+.space {
+    margin-top: 1rem;
+}
+
+.messageDiv {
+    background-color: hsl(327, 90%, 28%);
+    color: white;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    font-size: 1rem;
+    opacity: 0;
+    animation: fadeOut 7s forwards;
+}
