@@ -3,20 +3,24 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } f
 import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
-    // Your Firebase configuration
+    apiKey: "AIzaSyAzcPmcrE906QGVPgzu_bqtg3kigtt-MoQ",
+    authDomain: "iotproject-ff799.firebaseapp.com",
+    projectId: "iotproject-ff799",
+    storageBucket: "iotproject-ff799.appspot.com",
+    messagingSenderId: "935747739462",
+    appId: "1:935747739462:web:b53e34088c27d8410f0f47"
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
 
 function showMessage(message, divId) {
     let messageDiv = document.getElementById(divId);
     messageDiv.style.display = "block";
     messageDiv.innerHTML = message;
-    setTimeout(() => {
+    messageDiv.style.opacity = 1;
+    setTimeout(function(){
         messageDiv.style.opacity = 0;
-    }, 5000);
+    }, 10000);
 }
 
 // Sign Up Functionality
@@ -24,10 +28,13 @@ const signUp = document.getElementById('submitSignUp');
 signUp.addEventListener('click', (event) => {
     event.preventDefault();
     
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const phoneNumber = document.getElementById('phonenumber').value;
-    const password = document.getElementById('password').value;
+    const name = document.getElementById('rname').value;
+    const email = document.getElementById('remail').value;
+    const phoneNumber = document.getElementById('rphonenumber').value;
+    const password = document.getElementById('rpassword').value;
+
+    const auth = getAuth();
+    const db = getFirestore();
 
     createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -35,15 +42,14 @@ signUp.addEventListener('click', (event) => {
         const userData = {
             Name: name,
             Email: email,
-            PhoneNumber: phoneNumber,
-            Password: password
+            PhoneNumber: phoneNumber
         };
 
+        showMessage('Account created successfully', 'signUpMessage');
         const docRef = doc(db, "users", user.uid);
         setDoc(docRef, userData)
         .then(() => {
-            showMessage('Account created successfully', 'signUpMessage');
-            window.location.href = '/login';
+            window.location.href = 'register_login.html#signin';
         })
         .catch((error) => {
             console.error("Error writing document", error);
@@ -51,35 +57,37 @@ signUp.addEventListener('click', (event) => {
     })
     .catch((error) => {
         const errorCode = error.code;
-        if (errorCode === 'auth/email-already-in-use'){
+
+        if (errorCode == 'auth/email-already-in-use'){
             showMessage('Email address already exists!!!', "signUpMessage");
         } else {
             showMessage('Unable to create user', 'signUpMessage');
         }
-    });
-});
+    })
+})
 
-// Sign In Functionality
 const signIn = document.getElementById('submitSignIn');
 signIn.addEventListener('click', (event) => {
     event.preventDefault();
-
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+
+    const auth = getAuth();
 
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
         showMessage('Login is successful', 'signInMessage');
         const user = userCredential.user;
         localStorage.setItem('loggedInUserId', user.uid);
-        window.location.href = '/user';
+        window.location.href = 'user.html';
     })
     .catch((error) => {
         const errorCode = error.code;
-        if (errorCode === 'auth/invalid-credential') {
-            showMessage('Incorrect email or password', 'signInMessage');
-        } else {
-            showMessage('Account does not exist !!!', 'signInMessage');
+        if (errorCode=='auth/invalid-credential'){
+            showMessage('Incorrect Email or Password', 'signInMessage');
         }
-    });
-});
+        else {
+            showMessage("Account does not Exist", 'signInMessage');
+        }
+    })
+})

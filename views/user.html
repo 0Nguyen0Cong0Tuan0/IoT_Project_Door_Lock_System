@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User - Smart Door Lock System</title>
+    <link rel="stylesheet" href="../public/style.css">
+    <script type="module" src="../src/user.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
+</head>
+<body>
+    <nav>
+        <div class="nav_container">
+            <a href="home.html"><p>Smart Door Lock System</p></a>
+        </div>
+    </nav>
+
+    <div class="welcoming_container">
+        <p>WELCOME BACK <span id="username"></span></p>
+    </div>
+
+    <div class="main-product-content">
+        <div class="product-content">
+            <h2 style="display: flex; justify-content: center;">LOCK STATUS</h2>
+            <div class="stateOfLock stateOpen">
+                <div class="stateOfLockText textOpen"></div>
+            </div>
+
+            <div class="auto-lock-container">
+                <h2>AUTO LOCK</h2>
+                <button class="open-block-btn" id="toggle-lock">YES</button>
+            </div>
+            
+            <div class="lock-pass-container">
+                <h2>LOCK PASSWORD REGISTER</h2>
+                <div id="lock-pass" class="form-group">
+                    <form>
+                        <input type="password" name="lockPassword" placeholder="Enter Lock Password" required>
+                        <button type="submit" class="register-password-btn space">Register</button>
+                    </form>
+                </div>
+            </div>
+
+            
+        </div>
+
+        <div class="tutorial">
+            <h2>ACCESS HISTORY</h2>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam veritatis dolorum, voluptates ad provident incidunt blanditiis recusandae? Possimus magnam, quisquam voluptas laboriosam accusantium repellendus, esse enim labore consequuntur asperiores suscipit.</p>
+        </div>
+    </div>
+    <script src="../public/main.js"></script>
+</body>
+</html>

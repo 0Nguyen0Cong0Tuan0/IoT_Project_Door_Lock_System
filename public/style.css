@@ -1,5 +1,7 @@
+/* Importing Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
+/* Root Variables */
 :root {
     --color-white: #ebf4f6;
     --color-blue-light: #37b7c3;
@@ -12,6 +14,7 @@
     --color-red-lock: #f44336;
 }
 
+/* General Styles */
 * {
     margin: 0;
     padding: 0;
@@ -33,9 +36,10 @@ body {
 
 h2 {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
+/* Forms and Buttons */
 .form-container {
     width: 300px;
     margin: 0 auto;
@@ -75,10 +79,15 @@ h2 {
     transition: background-color 0.5s, color 0.5s;
 }
 
-.open-block-btn {
+.submit-btn:hover {
+    background-color: var(--color-blue-button-hover);
+}
+
+/* General Buttons */
+.open-block-btn, .register-password-btn {
     display: flex;
     justify-content: center;
-    align-content: center;
+    align-items: center;
     width: 50%;
     padding: 10px;
     margin: 0 auto;
@@ -90,15 +99,12 @@ h2 {
     transition: background-color 0.5s, color 0.5s;
 }
 
-.submit-btn:hover {
-    background-color: var(--color-blue-button-hover);
-}
-
-.open-block-btn:hover {
+.open-block-btn:hover, .register-password-btn:hover {
     background-color: var(--color-pure-black);
     color: var(--color-pure-white);
 }
 
+/* Text and Links */
 p {
     margin-top: 15px;
 }
@@ -111,8 +117,7 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Nav Bar */
-
+/* Navigation Bar */
 nav {
     background-color: var(--color-blue-light);
     width: 100vw;
@@ -156,6 +161,7 @@ nav .nav_buttons button:hover {
     background-color: var(--color-blue-button-hover);
 }
 
+/* Welcome Container */
 .welcoming_container {
     background-color: var(--color-white);
     width: 100vw;
@@ -171,6 +177,7 @@ nav .nav_buttons button:hover {
     font-weight: bold;
 }
 
+/* Main Content */
 .main-content {
     flex: 1; /* Ensure the content area takes up remaining space */
     display: flex;
@@ -182,14 +189,10 @@ nav .nav_buttons button:hover {
 }
 
 .main-product-content {
+    display: flex; /* Use flexbox for equal-width sections */
+    flex-direction: row;
+    justify-content: space-between;
     width: 80%;
-    max-width: 100%;
-    height: auto;
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    align-items: stretch; /* Ensures cells have the same height */
-    justify-content: center;
-    row-gap: normal;
     margin: 2rem auto;
 }
 
@@ -198,18 +201,23 @@ nav .nav_buttons button:hover {
     font-weight: bold;
     font-size: 1.5rem;
     padding-top: 2rem;
+    margin-bottom: 20px; /* Increase margin for separation */
 }
 
 .main-product-content .product-content,
 .main-product-content .tutorial {
+    width: 50%;
     padding: 2rem;
+    box-sizing: border-box; /* Ensures padding doesn't affect the width */
 }
 
 .main-product-content p {
     text-align: justify;
     color: var(--color-white);
+    margin-bottom: 20px; /* Add margin for better spacing */
 }
 
+/* Lock Status */
 .stateOfLock {
     width: 150px;
     height: 150px;
@@ -246,6 +254,7 @@ nav .nav_buttons button:hover {
     content: "LOCK";
 }
 
+/* Disabled Buttons */
 .unable-btn {
     background-color: #cccccc; 
     color: #666666;           
@@ -260,6 +269,7 @@ button:disabled {
     opacity: 0.5;
 }
 
+/* Responsive Design */
 @media screen and (max-width: 960px) {
     body {
         font-size: 1rem;
@@ -301,6 +311,7 @@ button:disabled {
     }
 }
 
+/* Additional Styles */
 .space {
     margin-top: 1rem;
 }
@@ -314,4 +325,85 @@ button:disabled {
     font-size: 1rem;
     opacity: 0;
     animation: fadeOut 7s forwards;
+}
+
+#signUpButton, #signInButton {
+    color: rgb(125, 125, 235);
+    border: none;
+    background-color: transparent;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+#signUpButton:hover, #signInButton:hover {
+    text-decoration: underline;
+    color: blue;
+}
+
+/* Centering the Containers */
+.auto-lock-container, .lock-pass-container {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: center; /* Center the items horizontally */
+    align-items: center; /* Center the items vertically */
+    gap: 15px; /* Space between items */
+    margin-top: 20px;
+    width: 100%; /* Full width of the parent container */
+    max-width: 600px; /* Limit the maximum width if needed */
+    margin: 20px auto; /* Center the containers on the page */
+}
+
+/* Ensure Heading and Form Are Styled Properly */
+.auto-lock-container h2, .lock-pass-container h2 {
+    text-align: center; /* Center the heading text */
+    margin-bottom: 15px; /* Space below the heading */
+}
+
+.auto-lock-container button, .lock-pass-container button {
+    width: 40%; /* Full width of the container */
+    padding: 12px;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.lock-pass-container input {
+    width: 100%; /* Full width of the container */
+    padding: 12px 25px;
+    border: 1px solid var(--color-pure-white);
+    border-radius: 3px;
+    box-sizing: border-box;
+    margin-bottom: 15px; /* Space below the input */
+}
+
+.register-password-btn {
+    width: 100%; /* Full width of the container */
+    padding: 12px 25px;
+    box-sizing: border-box;
+}
+
+.connect-btn {
+    width: 20%; /* Full width of the container */
+    border: 1px solid var(--color-pure-white);
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.5s, color 0.5s;
+    box-sizing: border-box;
+}
+
+.connect-btn:hover {
+    border: 1px solid var(--color-pure-black);
+    background-color: var(--color-pure-black);
+    color: var(--color-pure-white);
+}
+
+/* Optional: Additional Styling for Containers */
+.auto-lock-container, .lock-pass-container {
+    width: 100%; /* Full width of the parent container */
+    max-width: 600px; /* Limit the maximum width if needed */
+    margin: 20px auto; /* Center the containers on the page */
+}
+
+.product-content h2 {
+    text-align: left;
+    margin-bottom: 10px; /* Reduce margin to fit content better */
 }

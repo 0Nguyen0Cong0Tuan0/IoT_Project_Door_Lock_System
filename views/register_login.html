@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register & Login</title>
+    <link rel="stylesheet" href="../public/style.css">
+    <script type="module" src="../src/firebaseauth.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="nav_container">
+            <a href="home.html"><p>Smart Door Lock System</p></a>
+        </div>
+    </nav>
+
+    <div class="main-content" id="signup" style="display:none;">
+        <div class="form-container">
+            <h2>SIGN UP</h2>
+            <form method="post" action="">
+                <div id="signUpMessage" class="messageDiv" style="display:none;"></div>
+                <div class="form-group">
+                    <label for="rname">NAME</label>
+                    <input type="text" id="rname" name="username" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="remail">EMAIL</label>
+                    <input type="email" id="remail" name="useremail" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="rphonenumber">PHONE NUMBER</label>
+                    <input type="tel" id="rphonenumber" name="userphone" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="rpassword">PASSWORD</label>
+                    <input type="password" id="rpassword" name="password" required>
+                </div>
+                <button class="submit-btn" id="submitSignUp">Sign up</button>
+            </form>
+            <p>Already have an account? <a href="register_login.html#signin">Login</a></p>
+        </div>
+    </div>
+
+    <div class="main-content" id="signIn" style="display:none;">
+        <div class="form-container">
+            <h2>LOGIN</h2>
+            <form method="post" action=""> 
+                <div id="signInMessage" class="messageDiv" style="display:none;"></div>
+                <div class="form-group">
+                    <label for="email">EMAIL</label>
+                    <input type="email" id="email" name="useremail" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="password">PASSWORD</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <button class="submit-btn" id="submitSignIn">Login</button>
+            </form>
+            <p>Do not have an account? <a href="register_login.html#signup">Sign Up</a></p>
+        </div>
+    </div>
+    
+    <script>
+        function showForm() {
+            const hash = window.location.hash;
+
+            const signUpForm = document.getElementById('signup');
+            const signInForm = document.getElementById('signIn');
+
+            if (hash === '#signup') {
+                signUpForm.style.display = 'block';
+                signInForm.style.display = 'none';
+            } else if (hash === '#signin') {
+                signUpForm.style.display = 'none';
+                signInForm.style.display = 'block';
+            } else {
+                signUpForm.style.display = 'block';
+                signInForm.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('load', showForm);
+        window.addEventListener('hashchange', showForm);
+    </script>
+</body>
+</html>
