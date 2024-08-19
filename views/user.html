@@ -34,8 +34,8 @@
             <div class="lock-pass-container">
                 <h2>LOCK PASSWORD REGISTER</h2>
                 <div id="lock-pass" class="form-group">
-                    <form>
-                        <input type="password" name="lockPassword" placeholder="Enter Lock Password" required>
+                    <form id="lock-pass-form">
+                        <input type="password" name="lockPassword" id="lockPassword" maxlength="9" pattern="[0-9a-dA-D]{1,9}" placeholder="Enter Lock Password" title="Password must be 1-9 characters long and contain only 0-9, a-d, or A-D"  required>
                         <button type="submit" class="register-password-btn space">Register</button>
                     </form>
                 </div>

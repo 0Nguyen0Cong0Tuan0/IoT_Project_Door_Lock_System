@@ -27,12 +27,12 @@ async function fetchUserData() {
         if (userDocSnap.exists()) {
             const userData = userDocSnap.data();
             document.getElementById('username').textContent = userData.Name.toUpperCase();
-            return { ...userData, uid: userId }; // Return user data along with UID
+            return { ...userData, uid: userId }; 
         } else {
-            document.getElementById('username').textContent = "User"; // Fallback if user data is not found
+            document.getElementById('username').textContent = "User"; 
         }
     } else {
-        document.getElementById('username').textContent = "User"; // Fallback if no user ID is found
+        document.getElementById('username').textContent = "User"; 
     }
     return null;
 }
@@ -40,13 +40,19 @@ async function fetchUserData() {
 // Fetch the user data when the page loads
 window.addEventListener('load', async () => {
     const userData = await fetchUserData();
-    
-    // Handle lock password registration
-    const lockPassForm = document.querySelector('#lock-pass form');
+
+    const lockPassForm = document.querySelector('#lock-pass-form');
     lockPassForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const lockPassword = lockPassForm.lockPassword.value;
+
+        // Additional validation
+        const validPattern = /^[0-9a-dA-D]{1,9}$/;
+        if (!validPattern.test(lockPassword)) {
+            alert('Invalid password. Only 1-9 characters are allowed, and valid characters are 0-9, a-d, or A-D.');
+            return;
+        }
 
         if (userData) {
             try {
@@ -55,8 +61,7 @@ window.addEventListener('load', async () => {
                     LockPassword: lockPassword
                 });
 
-                // Connect to MQTT after successfully updating the lock password
-                connect(userData.uid, userData.Email, lockPassword); // Pass the UID, email, and lock password
+                connect(userData.uid, userData.Email, lockPassword);
 
             } catch (error) {
                 console.error('Error updating lock password:', error);

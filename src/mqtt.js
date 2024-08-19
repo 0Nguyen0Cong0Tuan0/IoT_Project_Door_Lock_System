@@ -16,7 +16,18 @@ export function connect(clientId, userEmail, lockPassword) {
 
 function onConnect(clientId, userEmail, lockPassword) {
     console.log("Connected");
-    publish(clientId, userEmail, lockPassword);
+
+    // Subscribe to the topic that matches the clientId
+    client.subscribe(clientId, {
+        onSuccess: () => {
+            console.log(`Subscribed to topic ${clientId}`);
+            // Publish the message after successful subscription
+            publish(clientId, userEmail, lockPassword);
+        },
+        onFailure: (error) => {
+            console.log("Subscription failed: " + error.errorMessage);
+        }
+    });
 }
 
 function onFailure(error) {
@@ -37,7 +48,7 @@ function publish(clientId, userEmail, lockPassword) {
     if (client.isConnected()) {
         const messagePayload = `Email: ${userEmail}, LockPassword: ${lockPassword}`;
         const message = new Paho.MQTT.Message(messagePayload);
-        message.destinationName = clientId; // Topic name is the userUID
+        message.destinationName = clientId; 
         client.send(message);
         console.log(`Message published to topic ${clientId}`);
     } else {

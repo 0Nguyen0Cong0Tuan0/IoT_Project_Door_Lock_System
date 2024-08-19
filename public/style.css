@@ -328,16 +328,17 @@ button:disabled {
 }
 
 #signUpButton, #signInButton {
-    color: rgb(125, 125, 235);
+    color: var(--color-white);
     border: none;
     background-color: transparent;
     font-size: 1rem;
     font-weight: bold;
+    display: inline-block;
+    padding: 0rem 0.5rem;
 }
 
 #signUpButton:hover, #signInButton:hover {
-    text-decoration: underline;
-    color: blue;
+    color: var(--color-blue-dark);
 }
 
 /* Centering the Containers */
