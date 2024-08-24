@@ -23,21 +23,19 @@
 
     <div class="main-product-content">
         <div class="product-content">
-            <h2 style="display: flex; justify-content: center;">LOCK STATUS</h2>
-            <div class="stateOfLock stateOpen">
-                <div class="stateOfLockText textOpen"></div>
+            <div class="stateOfLock stateLock">
+                <div class="stateOfLockText textLock"></div>
             </div>
 
             <div class="auto-lock-container">
-                <h2>AUTO LOCK</h2>
-                <button class="open-block-btn" id="toggle-lock">YES</button>
+                <button class="open-block-btn" id="toggle-lock">OPEN?</button>
             </div>
             
             <div class="lock-pass-container">
                 <h2>LOCK PASSWORD REGISTER</h2>
                 <div id="lock-pass" class="form-group">
                     <form id="lock-pass-form">
-                        <input type="password" name="lockPassword" id="lockPassword" maxlength="9" pattern="[0-9a-dA-D]{1,9}" placeholder="Enter Lock Password" title="Password must be 1-9 characters long and contain only 0-9, a-d, or A-D"  required>
+                        <input type="password" name="lockPassword" id="lockPassword" maxlength="9" minlength="1" pattern="[0-9a-dA-D]{1,9}" placeholder="Enter Lock Password" title="Password must be 1-9 characters long and contain only 0-9, a-d, or A-D"  required>
                         <button type="submit" class="register-password-btn space">Register</button>
                     </form>
                 </div>
@@ -48,8 +46,22 @@
 
         <div class="tutorial">
             <h2>ACCESS HISTORY</h2>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam veritatis dolorum, voluptates ad provident incidunt blanditiis recusandae? Possimus magnam, quisquam voluptas laboriosam accusantium repellendus, esse enim labore consequuntur asperiores suscipit.</p>
-        </div>
+            <div class="history-access">
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Content</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <button class="history-access-btn">SHOW HISTORY</button>
+        </>
     </div>
     <script src="../public/main.js"></script>
     <script type="module" src="../src/user.js"></script>

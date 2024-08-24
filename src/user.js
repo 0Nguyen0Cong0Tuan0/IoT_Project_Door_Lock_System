@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-import { connect } from "./mqtt.js";
+import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { connect, publish, subscribe } from "./mqtt.js";
+import { sendPushNotification, sendEmailNotification } from './emailnoti.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -16,13 +17,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Initialize EmailJS
-emailjs.init({
-    publicKey: "NOg6z4SdgBzJlZJax",
-});
-
 // Function to fetch the username and user data from Firestore
-async function fetchUserData() {
+export async function fetchUserData() {
     const userId = localStorage.getItem('loggedInUserId');
 
     if (userId) {
@@ -32,95 +28,22 @@ async function fetchUserData() {
         if (userDocSnap.exists()) {
             const userData = userDocSnap.data();
             document.getElementById('username').textContent = userData.Name.toUpperCase();
+
+            // Connect to MQTT and publish the userID to "Client" topic
+            const mqttClient = await connect(userId);
+            publish("Client", userId);
+
             return { ...userData, uid: userId };
         } else {
             console.error('User document does not exist.');
             document.getElementById('username').textContent = "User";
         }
     } else {
-        console.error('No logged in user ID found.');
+        console.error('No logged-in user ID found.');
         document.getElementById('username').textContent = "User";
     }
     return null;
 }
-
-async function getDeviceIDByDeviceName(userData) {
-    const apiKey = "bdVop1HtPdwgAyw2SMQu"; // Replace with your PushSafer API key
-    const email = "nguyencongtuan0810@gmail.com"; // Use the email associated with the PushSafer account
-    const account = `${userData.Email}-${userData.PhoneNumber}`
-    
-    try {
-        // Fetch devices
-        const response = await fetch(`https://www.pushsafer.com/api-de?k=${apiKey}&u=${email}`);
-        const result = await response.json();
-
-        if (result.status === 1) {
-            const devices = result.devices;
-            
-            // Find the device by name
-            for (const key in devices) {
-                if ( devices[key].name == account) {
-                    return devices[key].id; // Return the device ID
-                }
-            }
-            console.log('Device not found.');
-            return null;
-        } else {
-            console.error('Failed to retrieve devices. Error:', result.error);
-            return null;
-        }
-    } catch (error) {
-        console.error('Error fetching devices from PushSafer:', error);
-        return null;
-    }
-}
-
-
-async function sendPushNotification(userName, lockPassword, userData) {
-    let deviceID = await getDeviceIDByDeviceName(userData);
-
-    if (!deviceID) {
-        alert("Device not found. Registering new device...");
-        // Register the device here if needed
-        return;
-    }
-
-    const apiKey = "bdVop1HtPdwgAyw2SMQu"; // Replace with your PushSafer API key
-    const title = "Lock Password Updated";
-    const message = `Hi ${userName}, your lock password has been updated to: ${lockPassword}`;
-    const sound = "1"; // Enable sound
-    const vibration = "1"; // Enable vibration
-    const icon = ""; // Optionally set icon
-    const iconcolor = ""; // Optionally set icon color
-    const url = ""; // Optionally set URL
-    const urltitle = ""; // Optionally set URL title
-
-    let xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "https://www.pushsafer.com/api", true);
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-    xhttp.onreadystatechange = function () {
-        if (xhttp.readyState === XMLHttpRequest.DONE) {
-            if (xhttp.status === 200) {
-                const result = JSON.parse(xhttp.responseText);
-                console.log('PushSafer API response:', result);
-
-                if (result.status === 1) {
-                    alert('Push notification sent successfully.');
-                } else {
-                    alert('Failed to send push notification. Error: ' + result.error);
-                }
-            } else {
-                console.error('Failed to send push notification. Status:', xhttp.status);
-                alert('Failed to send push notification. Please check the console for more details.');
-            }
-        }
-    };
-
-    xhttp.send(`t=${encodeURIComponent(title)}&m=${encodeURIComponent(message)}&s=${sound}&v=${vibration}&i=${encodeURIComponent(icon)}&c=${encodeURIComponent(iconcolor)}&d=${encodeURIComponent(deviceID)}&u=${encodeURIComponent(url)}&ut=${encodeURIComponent(urltitle)}&k=${encodeURIComponent(apiKey)}`);
-}
-
-
 
 // Fetch the user data when the page loads
 window.addEventListener('load', async () => {
@@ -132,7 +55,6 @@ window.addEventListener('load', async () => {
 
         const lockPassword = lockPassForm.lockPassword.value;
 
-        // Additional validation
         const validPattern = /^[0-9a-dA-D]{1,9}$/;
         if (!validPattern.test(lockPassword)) {
             alert('Invalid password. Only 1-9 characters are allowed, and valid characters are 0-9, a-d, or A-D.');
@@ -144,27 +66,32 @@ window.addEventListener('load', async () => {
                 const userDocRef = doc(db, 'users', userData.uid);
                 await updateDoc(userDocRef, {
                     LockPassword: lockPassword
+                    
                 });
 
-                // await sendPushNotification(userData.Name, lockPassword, userData);
+                const historyRef = collection(db, `history-${userData.uid}`);
+                const newHistoryEntry = {
+                    timestamp: new Date().toLocaleString(),
+                    content: `[PASSWORD]_You registered the door lock password as ${lockPassword}`
+                };
 
-                // Send email notification via EmailJS
-                // const templateParams = {
-                //     to_name: userData.Name,
-                //     to_email: userData.Email,
-                //     message: `Your lock password has been successfully updated to: ${lockPassword}\n\nIf you did not authorize this change, please contact us immediately at door_lock_system_support@gmail.com.`
-                // };
+                await addDoc(historyRef, newHistoryEntry);
+                console.log("History entry added for password registration.");
+                
 
-                // emailjs.send("service_v0qbu4a", "template_q65rsmz", templateParams)
-                //     .then((response) => {
-                //         alert('Lock password updated and email sent successfully.');
-                //     }, (error) => {
-                //         console.error('Failed to send email:', error);
-                //         alert('Failed to send email.');
-                //     });
+                console.log("Attempting to connect with client ID: " + userData.uid);
 
-                // Connect to MQTT after successfully updating the lock password
-                connect(userData.uid, userData.Email, lockPassword); // Pass the UID, email, and lock password
+                const mqttClient = await connect(userData.uid);
+
+                const messagePayload = `Email: ${userData.Email}, LockPassword: ${lockPassword}`;
+                publish(userData.uid, messagePayload);
+
+                subscribe(userData.uid);
+
+                // await sendPushNotification(userData, lockPassword);
+                
+                // sendEmailNotification(userData, lockPassword);
+                
 
             } catch (error) {
                 console.error('Error updating lock password:', error);
@@ -172,6 +99,140 @@ window.addEventListener('load', async () => {
             }
         } else {
             alert('User not logged in. Please log in and try again.');
-        }
+        }          
     });
+
+    // Handle the lock state toggle button
+    if (userData) {
+        await handleToggleButton(userData);
+    }
+});
+
+// Handle the lock state toggle button
+async function handleToggleButton(userData) {
+    const toggleButton = document.getElementById("toggle-lock");
+    const stateOfLockDiv = document.querySelector(".stateOfLock");
+    const stateOfLockTextDiv = document.querySelector(".stateOfLockText");
+
+    toggleButton.addEventListener("click", async function() {
+        let content;
+        if (stateOfLockDiv.classList.contains("stateOpen")) {
+            // Switch to "Lock" state
+            stateOfLockDiv.classList.remove("stateOpen");
+            stateOfLockDiv.classList.add("stateLock");
+            stateOfLockTextDiv.classList.remove("textOpen");
+            stateOfLockTextDiv.classList.add("textLock");
+            toggleButton.textContent = "OPEN?"; // Update button text
+
+            content = "[STATE]_Your door is blocked";
+            publish(userData.uid, "block"); // Publish "block" to MQTT topic
+
+        } else {
+            // Switch to "Open" state
+            stateOfLockDiv.classList.remove("stateLock");
+            stateOfLockDiv.classList.add("stateOpen");
+            stateOfLockTextDiv.classList.remove("textLock");
+            stateOfLockTextDiv.classList.add("textOpen");
+            toggleButton.textContent = "BLOCK?"; // Update button text
+
+            content = "[STATE]_Your door is opening";
+            publish(userData.uid, "open"); // Publish "open" to MQTT topic
+        }
+
+        // Add history entry for state change
+        const historyRef = collection(db, `history-${userData.uid}`);
+        const newHistoryEntry = {
+            timestamp: new Date().toLocaleString(),
+            content: content
+        };
+
+        await addDoc(historyRef, newHistoryEntry);
+        console.log("History entry added for lock state change.");
+    });
+}
+
+export async function updateToggleButton(userData) {
+    const toggleButton = document.getElementById("toggle-lock");
+    const stateOfLockDiv = document.querySelector(".stateOfLock");
+    const stateOfLockTextDiv = document.querySelector(".stateOfLockText");
+
+
+    if (stateOfLockDiv.classList.contains("stateLock")) {
+        const content = "[STATE]_Your door is opening";
+        // Switch to "Open" state
+        stateOfLockDiv.classList.remove("stateLock");
+        stateOfLockDiv.classList.add("stateOpen");
+        stateOfLockTextDiv.classList.remove("textLock");
+        stateOfLockTextDiv.classList.add("textOpen");
+        toggleButton.textContent = "BLOCK?"; // Update button text
+    }
+}
+
+export async function addWarningHistory(userData) {
+    // Add history entry for state change
+    const historyRef = collection(db, `history-${userData.uid}`);
+    const newHistoryEntry = {
+        timestamp: new Date().toLocaleString(),
+        content: '[Warning]_Someone is trying to enter your building. '
+    };
+
+    await addDoc(historyRef, newHistoryEntry);
+    console.log("History entry added for warning message.");
+}
+
+
+export async function addOpenHistory(userData) {
+    // Add history entry for state change
+    const historyRef = collection(db, `history-${userData.uid}`);
+    const newHistoryEntry = {
+        timestamp: new Date().toLocaleString(),
+        content: '[STATE]_Your door is opening.'
+    };
+
+    await addDoc(historyRef, newHistoryEntry);
+    console.log("History entry added for lock state change.");
+}
+
+document.querySelector('.history-access-btn').addEventListener('click', async () => {
+    const userId = localStorage.getItem('loggedInUserId');
+    if (!userId) {
+        alert('No logged-in user found.');
+        return;
+    }
+
+    const historyRef = collection(db, `history-${userId}`);
+    const q = query(historyRef, orderBy('timestamp', 'desc'), limit(20));
+    
+    try {
+        const querySnapshot = await getDocs(q);
+        const historyTable = document.getElementById('history-table');
+        const tbody = historyTable.querySelector('tbody');
+        tbody.innerHTML = '';
+
+        if (querySnapshot.empty) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="4">No history available.</td>`;
+            tbody.appendChild(row);
+        } else {
+            let index = 0;
+            for (const doc of querySnapshot.docs) {
+                
+                const entry = doc.data();
+                const [date, time] = entry.timestamp.split(', ');
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${date}</td>
+                    <td>${time}</td>
+                    <td>${entry.content}</td>
+                `;
+                tbody.appendChild(row);
+
+                index++;
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching documents:', error);
+    }
 });

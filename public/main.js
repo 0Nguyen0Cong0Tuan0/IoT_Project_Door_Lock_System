@@ -43,22 +43,3 @@ if (signUpButton && signInButton) {
         window.location.href = "register_login.html#signin";
     });
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-    const toggleButton = document.getElementById("toggle-lock");
-    const stateOfLockDiv = document.querySelector(".stateOfLock");
-    const stateOfLockTextDiv = document.querySelector(".stateOfLockText");
-
-    toggleButton.addEventListener("click", function() {
-        if (stateOfLockDiv.classList.contains("stateOpen")) {
-            stateOfLockDiv.classList.remove("stateOpen");
-            stateOfLockDiv.classList.add("stateLock");
-            stateOfLockTextDiv.classList.remove("textOpen");
-            stateOfLockTextDiv.classList.add("textLock");
-
-            // Disable the button
-            toggleButton.disabled = true;
-            toggleButton.classList.add("unable-btn");
-        }
-    });
-});

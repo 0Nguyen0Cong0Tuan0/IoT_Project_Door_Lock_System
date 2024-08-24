@@ -84,7 +84,9 @@ h2 {
 }
 
 /* General Buttons */
-.open-block-btn, .register-password-btn {
+.open-block-btn, 
+.register-password-btn, 
+.history-access-btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -99,7 +101,9 @@ h2 {
     transition: background-color 0.5s, color 0.5s;
 }
 
-.open-block-btn:hover, .register-password-btn:hover {
+.open-block-btn:hover, 
+.register-password-btn:hover,
+.history-access-btn:hover  {
     background-color: var(--color-pure-black);
     color: var(--color-pure-white);
 }
@@ -407,4 +411,34 @@ button:disabled {
 .product-content h2 {
     text-align: left;
     margin-bottom: 10px; /* Reduce margin to fit content better */
+}
+
+/* Style for the table */
+#history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+
+}
+
+/* Style for table headers and cells */
+#history-table th, #history-table td {
+    border: 1px solid #ddd; /* Add border to cells */
+    padding: 8px; /* Add padding for readability */
+    text-align: left; /* Align text to the left */
+}
+
+/* Style for table headers */
+#history-table th {
+    background-color: #f2f2f2; /* Background color for headers */
+    color: #333; /* Text color for headers */
+}
+
+/* Style for table rows on hover */
+#history-table tr {
+    font-weight: bold;
+    color: white;
+}
+#history-table tr:hover {
+    background-color: var(--color-red-lock); /* Change background on hover */
 }

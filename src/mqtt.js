@@ -1,36 +1,50 @@
+import { sendWarningEmailNotification, sendPushWarningNotification } from './emailnoti.js'; // Import the function
+import { fetchUserData, addWarningHistory, addOpenHistory, updateToggleButton } from './user.js';
+
 let client;
 
-export function connect(clientId, userEmail, lockPassword) {
-    console.log("Attempting to connect with client ID: " + clientId);
+export async function connect(clientId) {
     client = new Paho.MQTT.Client("localhost", 9001, clientId); // Updated port
     client.onConnectionLost = onConnectionLost;
     client.onMessageArrived = onMessageArrived;
-    client.connect({
-        onSuccess: () => onConnect(clientId, userEmail, lockPassword),
-        onFailure: onFailure,
-        useSSL: false
+
+    return new Promise((resolve, reject) => {
+        client.connect({
+            onSuccess: () => {
+                console.log("Connected");
+                resolve(client);
+            },
+            onFailure: (error) => {
+                console.log("Connection failed: " + error.errorMessage);
+                reject(error);
+            },
+            useSSL: false
+        });
     });
 }
 
-
-function onConnect(clientId, userEmail, lockPassword) {
-    console.log("Connected");
-
-    // Subscribe to the topic that matches the clientId
-    client.subscribe(clientId, {
-        onSuccess: () => {
-            console.log(`Subscribed to topic ${clientId}`);
-            // Publish the message after successful subscription
-            publish(clientId, userEmail, lockPassword);
-        },
-        onFailure: (error) => {
-            console.log("Subscription failed: " + error.errorMessage);
-        }
-    });
+export function publish(topic, payload) {
+    if (client && client.isConnected()) {
+        const message = new Paho.MQTT.Message(payload);
+        message.destinationName = topic; 
+        client.send(message);
+        console.log(`Message published to topic ${topic}`);
+        console.log(`Message sent: ${payload}`)
+    } else {
+        console.log("Client not connected. Unable to publish.");
+    }
 }
 
-function onFailure(error) {
-    console.log("Connection failed: " + error.errorMessage);
+export function subscribe(topic) {
+    if (client && client.isConnected()) {
+        client.subscribe(topic, { qos: 1 }, (error) => {
+            if (error) {
+                console.error('Error subscribing:', error);
+            }
+        });
+    } else {
+        console.log("Client not connected. Unable to subscribe.");
+    }
 }
 
 function onConnectionLost(responseObject) {
@@ -41,16 +55,35 @@ function onConnectionLost(responseObject) {
 
 function onMessageArrived(message) {
     console.log("Message arrived: " + message.payloadString);
-}
+    
+    const payload = message.payloadString;
+    const topic = message.destinationName;
 
-function publish(clientId, userEmail, lockPassword) {
-    if (client.isConnected()) {
-        const messagePayload = `Email: ${userEmail}, LockPassword: ${lockPassword}`;
-        const message = new Paho.MQTT.Message(messagePayload);
-        message.destinationName = clientId; 
-        client.send(message);
-        console.log(`Message published to topic ${clientId}`);
-    } else {
-        console.log("Client not connected. Unable to publish.");
+    // Check if the payload contains "warning"
+    if (payload.toLowerCase() === 'warning') {
+        console.log("Warning received. Sending email notification...");
+
+        // Fetch user data to send the email
+        fetchUserData().then(userData => {
+            if (userData) {
+                // sendWarningEmailNotification(userData);
+                // sendPushWarningNotification(userData);
+                addWarningHistory(userData);
+                console.log("SENT");
+            }
+        });
+    }
+
+    if (payload.toLowerCase() === 'open') {
+        console.log("User inputs password correctly...");
+
+        // Fetch user data to send the email
+        fetchUserData().then(userData => {
+            if (userData) {
+                addOpenHistory(userData);
+                updateToggleButton(userData);
+                console.log("OPEN");
+            }
+        });
     }
 }

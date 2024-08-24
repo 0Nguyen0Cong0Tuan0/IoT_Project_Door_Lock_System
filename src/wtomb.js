@@ -5,7 +5,7 @@ const WebSocket = require('ws');
 const mqtt = require('mqtt');
 
 const mqttBrokerUrl = 'mqtt://localhost:1883'; // Your MQTT broker URL
-const mqttTopic = 'AbtqLqY5Rcc43dBatoYJHflsAUg1'; // Topic to publish to
+const mqttTopic = 'Client'; // Topic to publish to
 
 const wss = new WebSocket.Server({ port: 9001 });
 const mqttClient = mqtt.connect(mqttBrokerUrl);
