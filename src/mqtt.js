@@ -1,4 +1,4 @@
-import { sendWarningEmailNotification, sendPushWarningNotification } from './emailnoti.js'; // Import the function
+import { sendWarningEmailNotification, sendPushWarningNotification, sendOTPNotification } from './emailnoti.js'; // Import the function
 import { fetchUserData, addWarningHistory, addOpenHistory, updateToggleButton, addOTPHistory } from './user.js';
 
 let client;
@@ -77,8 +77,8 @@ function onMessageArrived(message) {
         // Fetch user data to send the email
         fetchUserData().then(userData => {
             if (userData) {
-                // sendWarningEmailNotification(userData);
-                // sendPushWarningNotification(userData);
+                sendWarningEmailNotification(userData);
+                sendPushWarningNotification(userData);
                 addWarningHistory(userData);
                 console.log("SENT");
             }
@@ -100,11 +100,12 @@ function onMessageArrived(message) {
 
     if (otpIndex != -1) {
         console.log("Receive the OTP: " +  payload.substring(otpIndex + 5));
-
+        const otp = payload.substring(otpIndex + 5);
         // Fetch user data to send the email
         fetchUserData().then(userData => {
             if (userData) {
-                addOTPHistory(userData, payload.substring(otpIndex + 5))
+                sendOTPNotification(userData, otp);
+                addOTPHistory(userData, otp)
                 console.log("OTP Saved");
             }    
         });

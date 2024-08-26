@@ -86,7 +86,9 @@ h2 {
 /* General Buttons */
 .open-block-btn, 
 .register-password-btn, 
-.history-access-btn {
+.history-access-btn,
+.auto_lock_feature_btn,
+._2fa_feature_btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -346,7 +348,10 @@ button:disabled {
 }
 
 /* Centering the Containers */
-.auto-lock-container, .lock-pass-container {
+.auto-lock-container, 
+.lock-pass-container , 
+.auto_lock_feature,
+._2FA_security {
     display: flex;
     flex-direction: column; /* Stack items vertically */
     justify-content: center; /* Center the items horizontally */
@@ -441,4 +446,15 @@ button:disabled {
 }
 #history-table tr:hover {
     background-color: var(--color-red-lock); /* Change background on hover */
+}
+
+.auto_lock_feature_btn,
+._2fa_feature_btn {
+    background-color: red;
+    color: white;
+}
+
+.auto_lock_feature_btn.active,
+._2fa_feature_btn.active {
+    background-color: green;
 }

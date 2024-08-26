@@ -46,7 +46,7 @@ export async function sendPushNotification(userData, lockPassword) {
 
     const apiKey = "bdVop1HtPdwgAyw2SMQu";
     const title = "Lock Password Updated";
-    const message = `Hi ${userData.userName}, your lock password has been updated to: ${lockPassword}`;
+    const message = `Hi ${userData.Name}, your lock password has been updated to: ${lockPassword}`;
     const sound = "1";
     const vibration = "1";
 
@@ -86,7 +86,47 @@ export async function sendPushWarningNotification(userData) {
 
     const apiKey = "bdVop1HtPdwgAyw2SMQu";
     const title = "Warning: Suspicious Entry Activities Detected";
-    const message = `Hi ${userData.userName}, \nSomeone is trying to enter your building. Please check your security system.`;
+    const message = `Hi ${userData.Name}, \nSomeone is trying to enter your building. Please check your security system.`;
+    const sound = "1";
+    const vibration = "1";
+
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "https://www.pushsafer.com/api", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xhttp.onreadystatechange = function () {
+        if (xhttp.readyState === XMLHttpRequest.DONE) {
+            if (xhttp.status === 200) {
+                const result = JSON.parse(xhttp.responseText);
+                console.log('PushSafer API response:', result);
+
+                if (result.status === 1) {
+                    alert('Push notification sent successfully.');
+                } else {
+                    alert('Failed to send push notification. Error: ' + result.error);
+                }
+            } else {
+                console.error('Failed to send push notification. Status:', xhttp.status);
+                alert('Failed to send push notification. Please check the console for more details.');
+            }
+        }
+    };
+
+    xhttp.send(`t=${encodeURIComponent(title)}&m=${encodeURIComponent(message)}&s=${sound}&v=${vibration}&d=${encodeURIComponent(deviceID)}&k=${encodeURIComponent(apiKey)}`);
+}
+
+// Send OTP to PushSafer
+export async function sendOTPNotification(userData, otp) {
+    let deviceID = await getDeviceIDByDeviceName(userData);
+
+    if (!deviceID) {
+        alert("Device not found. Registering new device...");
+        return;
+    }
+
+    const apiKey = "bdVop1HtPdwgAyw2SMQu";
+    const title = "Your OTP Code";
+    const message = `Hi ${userData.Name}, your OTP code is: ${otp}`;
     const sound = "1";
     const vibration = "1";
 

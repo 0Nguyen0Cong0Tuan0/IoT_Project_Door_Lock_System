@@ -91,11 +91,8 @@ window.addEventListener('load', async () => {
 
                 subscribe(userData.uid);
 
-                // await sendPushNotification(userData, lockPassword);
-                
-                // sendEmailNotification(userData, lockPassword);
-                
-
+                sendPushNotification(userData, lockPassword);
+                sendEmailNotification(userData, lockPassword);
             } catch (error) {
                 console.error('Error updating lock password:', error);
                 alert('Failed to register lock password. Please try again later.');
@@ -257,4 +254,94 @@ document.querySelector('.history-access-btn').addEventListener('click', async ()
     } catch (error) {
         console.error('Error fetching documents:', error);
     }
+});
+
+// ------------------------------------------------ READ HISTORY ON CLOUD and SHOW ON WEBSITE SECTION ------------------------------------------------ //
+document.querySelector('.history-access-btn').addEventListener('click', async () => {
+    const userId = localStorage.getItem('loggedInUserId');
+    if (!userId) {
+        alert('No logged-in user found.');
+        return;
+    }
+
+    const historyRef = collection(db, `history-${userId}`);
+    const q = query(historyRef, orderBy('timestamp', 'desc'), limit(20));
+    
+    try {
+        const querySnapshot = await getDocs(q);
+        const historyTable = document.getElementById('history-table');
+        const tbody = historyTable.querySelector('tbody');
+        tbody.innerHTML = '';
+
+        if (querySnapshot.empty) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="4">No history available.</td>`;
+            tbody.appendChild(row);
+        } else {
+            let index = 0;
+            querySnapshot.docs.reverse().forEach(doc => {
+                const entry = doc.data();
+                const [date, time] = entry.timestamp.split(', ');
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${20 - index}</td>
+                    <td>${date}</td>
+                    <td>${time}</td>
+                    <td>${entry.content}</td>
+                `;
+                tbody.insertBefore(row, tbody.firstChild); // Insert each new row at the top of tbody
+
+                index++;
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching documents:', error);
+    }
+});
+
+// ------------------------------------------------ AUTO LOCK FEATURE ------------------------------------------------ //
+
+document.addEventListener('DOMContentLoaded', function() {
+    const autoLockToggleBtn = document.getElementById('auto-lock-toggle');
+
+    const userId = localStorage.getItem('loggedInUserId');
+    if (!userId) {
+        alert('No logged-in user found.');
+        return;
+    }
+
+    autoLockToggleBtn.addEventListener('click', function() {
+        if (autoLockToggleBtn.textContent === 'OFF') {
+            autoLockToggleBtn.textContent = 'ON';
+            autoLockToggleBtn.classList.add('active');
+            publish(userId, "auto_lock_ON")
+        } else {
+            autoLockToggleBtn.textContent = 'OFF';
+            autoLockToggleBtn.classList.remove('active');
+            publish(userId, "auto_lock_OFF")
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const autoLockToggleBtn = document.getElementById('_2fa-lock-toggle');
+
+    const userId = localStorage.getItem('loggedInUserId');
+    if (!userId) {
+        alert('No logged-in user found.');
+        return;
+    }
+
+    autoLockToggleBtn.addEventListener('click', function() {
+        if (autoLockToggleBtn.textContent === 'OFF') {
+            autoLockToggleBtn.textContent = 'ON';
+            autoLockToggleBtn.classList.add('active');
+            publish(userId, "_2FA_ON")
+        } else {
+            autoLockToggleBtn.textContent = 'OFF';
+            autoLockToggleBtn.classList.remove('active');
+            publish(userId, "_2FA_OFF")
+        }
+    });
 });
