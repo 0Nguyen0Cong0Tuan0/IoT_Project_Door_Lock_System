@@ -2,6 +2,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+// ------------------------------------------------ FIREBASE SECTION ------------------------------------------------ //
+// Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAzcPmcrE906QGVPgzu_bqtg3kigtt-MoQ",
     authDomain: "iotproject-ff799.firebaseapp.com",
@@ -13,6 +15,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+// Show message 
 function showMessage(message, divId) {
     let messageDiv = document.getElementById(divId);
     messageDiv.style.display = "block";
@@ -23,7 +26,8 @@ function showMessage(message, divId) {
     }, 10000);
 }
 
-// Sign Up Functionality
+// Sign Up Functionality - User need to provide {UserName}, {Email}, {PhoneNumber}, {Password}
+// The user data will be saved / wrote on the FirebaseStore database 
 const signUp = document.getElementById('submitSignUp');
 signUp.addEventListener('click', (event) => {
     event.preventDefault();
@@ -66,6 +70,7 @@ signUp.addEventListener('click', (event) => {
     })
 })
 
+// Sign In Functionality - User need to provide {Email}, {Password}
 const signIn = document.getElementById('submitSignIn');
 signIn.addEventListener('click', (event) => {
     event.preventDefault();

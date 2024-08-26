@@ -1,10 +1,9 @@
-// Install these packages via npm:
 // npm install ws mqtt
 
 const WebSocket = require('ws');
 const mqtt = require('mqtt');
 
-const mqttBrokerUrl = 'mqtt://localhost:1883'; // Your MQTT broker URL
+const mqttBrokerUrl = 'mqtt://localhost:1883'; // The MQTT broker URL
 const mqttTopic = 'Client'; // Topic to publish to
 
 const wss = new WebSocket.Server({ port: 9001 });

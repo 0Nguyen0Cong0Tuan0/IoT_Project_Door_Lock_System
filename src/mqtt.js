@@ -1,8 +1,9 @@
 import { sendWarningEmailNotification, sendPushWarningNotification } from './emailnoti.js'; // Import the function
-import { fetchUserData, addWarningHistory, addOpenHistory, updateToggleButton } from './user.js';
+import { fetchUserData, addWarningHistory, addOpenHistory, updateToggleButton, addOTPHistory } from './user.js';
 
 let client;
 
+// Create/establish the websocket client (on port 9001 - protocol websockets)
 export async function connect(clientId) {
     client = new Paho.MQTT.Client("localhost", 9001, clientId); // Updated port
     client.onConnectionLost = onConnectionLost;
@@ -23,6 +24,7 @@ export async function connect(clientId) {
     });
 }
 
+// Publish to the topic {topic} with the message {payload}
 export function publish(topic, payload) {
     if (client && client.isConnected()) {
         const message = new Paho.MQTT.Message(payload);
@@ -35,6 +37,7 @@ export function publish(topic, payload) {
     }
 }
 
+// Subcribe to the topic {topic}
 export function subscribe(topic) {
     if (client && client.isConnected()) {
         client.subscribe(topic, { qos: 1 }, (error) => {
@@ -47,17 +50,25 @@ export function subscribe(topic) {
     }
 }
 
+// Print out when the connection lost
 function onConnectionLost(responseObject) {
     if (responseObject.errorCode !== 0) {
         console.log("Connection Lost: " + responseObject.errorMessage);
     }
 }
 
+// Handle the incoming messages
+// There are 3 kind of messages will be handle:
+// - 'warning' message - when DOOR LOCK detected any illegal activity
+// - 'open' message - when DOOR LOCK is opening / user input the correct password
+// - 'opt saved' message - when the DOOR LOCK sent the OPT to the website
 function onMessageArrived(message) {
     console.log("Message arrived: " + message.payloadString);
     
     const payload = message.payloadString;
     const topic = message.destinationName;
+
+    const otpIndex = payload.indexOf('OTP: ');
 
     // Check if the payload contains "warning"
     if (payload.toLowerCase() === 'warning') {
@@ -84,6 +95,18 @@ function onMessageArrived(message) {
                 updateToggleButton(userData);
                 console.log("OPEN");
             }
+        });
+    }
+
+    if (otpIndex != -1) {
+        console.log("Receive the OTP: " +  payload.substring(otpIndex + 5));
+
+        // Fetch user data to send the email
+        fetchUserData().then(userData => {
+            if (userData) {
+                addOTPHistory(userData, payload.substring(otpIndex + 5))
+                console.log("OTP Saved");
+            }    
         });
     }
 }

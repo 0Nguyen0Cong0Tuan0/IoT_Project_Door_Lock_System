@@ -1,6 +1,11 @@
-// Initialize EmailJS
+// Initialize EmailJS - for send email for user
+// npm install --save @emailjs/browser
 emailjs.init("NOg6z4SdgBzJlZJax"); // Initialize EmailJS with public key
 
+// ----------------------------------- PUSH NOTIFICATION SECTION ------------------------------------------- //
+// Using PushSafer
+// Find the deviceID by device name though API provided by PushSafer
+// API: 'https://www.pushsafer.com/api-de?k=${apiKey}&u=${email}'
 async function getDeviceIDByDeviceName(userData) {
     const apiKey = "bdVop1HtPdwgAyw2SMQu";
     const email = "nguyencongtuan0810@gmail.com";
@@ -30,6 +35,7 @@ async function getDeviceIDByDeviceName(userData) {
     }
 }
 
+// Send the Push Notification to the deviceID - PushSafer - when the user register / update the door lock password
 export async function sendPushNotification(userData, lockPassword) {
     let deviceID = await getDeviceIDByDeviceName(userData);
 
@@ -69,6 +75,7 @@ export async function sendPushNotification(userData, lockPassword) {
     xhttp.send(`t=${encodeURIComponent(title)}&m=${encodeURIComponent(message)}&s=${sound}&v=${vibration}&d=${encodeURIComponent(deviceID)}&k=${encodeURIComponent(apiKey)}`);
 }
 
+// Send the Push Notification to the deviceID - PushSafer - when the DOOR LOCK detected any illegal activity
 export async function sendPushWarningNotification(userData) {
     let deviceID = await getDeviceIDByDeviceName(userData);
 
@@ -108,24 +115,8 @@ export async function sendPushWarningNotification(userData) {
     xhttp.send(`t=${encodeURIComponent(title)}&m=${encodeURIComponent(message)}&s=${sound}&v=${vibration}&d=${encodeURIComponent(deviceID)}&k=${encodeURIComponent(apiKey)}`);
 }
 
-// Function to send an email warning notification
-export async function sendWarningEmailNotification(userData) {
-    const templateParams = {
-        to_name: userData.Name,
-        to_email: userData.Email,
-        message: "Warning: Someone is trying to enter your building. Please check your security system."
-    };
-
-    emailjs.send("service_v0qbu4a", "template_3yzubac", templateParams)
-        .then((response) => {
-            alert("Warning Warning Warning - Sent email warning");
-        }, (error) => {
-            console.error('Failed to send email:', error);
-            alert('Failed to send email.');
-        });
-}
-
-// Function to send an email notification
+// ----------------------------------- EMAIL SECTION ------------------------------------------- //
+// Function to send an email notification - EmailJS - when the user register / update the door lock password
 export async function sendEmailNotification(userData, lockPassword) {
     // Send email notification via EmailJS
     const templateParams = {
@@ -142,3 +133,21 @@ export async function sendEmailNotification(userData, lockPassword) {
             alert('Failed to send email.');
         });
 }
+
+// Function to send an email warning notification - EmailJS - when the DOOR LOCK detected any illegal activity
+export async function sendWarningEmailNotification(userData) {
+    const templateParams = {
+        to_name: userData.Name,
+        to_email: userData.Email,
+        message: "Warning: Someone is trying to enter your building. Please check your security system."
+    };
+
+    emailjs.send("service_v0qbu4a", "template_3yzubac", templateParams)
+        .then((response) => {
+            alert("Warning Warning Warning - Sent email warning");
+        }, (error) => {
+            console.error('Failed to send email:', error);
+            alert('Failed to send email.');
+        });
+}
+

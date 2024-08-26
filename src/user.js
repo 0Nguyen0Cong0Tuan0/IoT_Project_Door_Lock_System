@@ -3,6 +3,7 @@ import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, query, orderB
 import { connect, publish, subscribe } from "./mqtt.js";
 import { sendPushNotification, sendEmailNotification } from './emailnoti.js';
 
+// ------------------------------------------------ FIREBASE SECTION ------------------------------------------------ //
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAzcPmcrE906QGVPgzu_bqtg3kigtt-MoQ",
@@ -17,6 +18,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+
+// ------------------------------------------------ FETCH USER DATA SECTION ------------------------------------------------ //
 // Function to fetch the username and user data from Firestore
 export async function fetchUserData() {
     const userId = localStorage.getItem('loggedInUserId');
@@ -108,7 +111,9 @@ window.addEventListener('load', async () => {
     }
 });
 
-// Handle the lock state toggle button
+
+// ------------------------------------------------ TOGGLE BUTTON / STATE OF LOCK SECTION ------------------------------------------------ //
+// Handle the lock state toggle button - [event] = 'click'
 async function handleToggleButton(userData) {
     const toggleButton = document.getElementById("toggle-lock");
     const stateOfLockDiv = document.querySelector(".stateOfLock");
@@ -125,7 +130,7 @@ async function handleToggleButton(userData) {
             toggleButton.textContent = "OPEN?"; // Update button text
 
             content = "[STATE]_Your door is blocked";
-            publish(userData.uid, "block"); // Publish "block" to MQTT topic
+            publish(userData.uid, "W_block"); // Publish "block" to MQTT topic
 
         } else {
             // Switch to "Open" state
@@ -136,7 +141,7 @@ async function handleToggleButton(userData) {
             toggleButton.textContent = "BLOCK?"; // Update button text
 
             content = "[STATE]_Your door is opening";
-            publish(userData.uid, "open"); // Publish "open" to MQTT topic
+            publish(userData.uid, "W_open"); // Publish "open" to MQTT topic
         }
 
         // Add history entry for state change
@@ -151,6 +156,7 @@ async function handleToggleButton(userData) {
     });
 }
 
+// Update the toggle button - message from ESP32
 export async function updateToggleButton(userData) {
     const toggleButton = document.getElementById("toggle-lock");
     const stateOfLockDiv = document.querySelector(".stateOfLock");
@@ -168,6 +174,9 @@ export async function updateToggleButton(userData) {
     }
 }
 
+
+// ------------------------------------------------ SAVE HISTORY SECTION ------------------------------------------------ //
+// Warning history
 export async function addWarningHistory(userData) {
     // Add history entry for state change
     const historyRef = collection(db, `history-${userData.uid}`);
@@ -180,7 +189,7 @@ export async function addWarningHistory(userData) {
     console.log("History entry added for warning message.");
 }
 
-
+// Open history
 export async function addOpenHistory(userData) {
     // Add history entry for state change
     const historyRef = collection(db, `history-${userData.uid}`);
@@ -193,6 +202,20 @@ export async function addOpenHistory(userData) {
     console.log("History entry added for lock state change.");
 }
 
+// OTP saved history
+export async function addOTPHistory(userData, otpString) {
+    // Add history entry for state change
+    const historyRef = collection(db, `history-${userData.uid}`);
+    const newHistoryEntry = {
+        timestamp: new Date().toLocaleString(),
+        content: `[OTP]_Generating OTP is ${otpString}.`
+    };
+
+    await addDoc(historyRef, newHistoryEntry);
+    console.log("History entry added for OTP generation.");
+}
+
+// ------------------------------------------------ READ HISTORY ON CLOUD and SHOW ON WEBSITE SECTION ------------------------------------------------ //
 document.querySelector('.history-access-btn').addEventListener('click', async () => {
     const userId = localStorage.getItem('loggedInUserId');
     if (!userId) {
@@ -215,22 +238,21 @@ document.querySelector('.history-access-btn').addEventListener('click', async ()
             tbody.appendChild(row);
         } else {
             let index = 0;
-            for (const doc of querySnapshot.docs) {
-                
+            querySnapshot.docs.reverse().forEach(doc => {
                 const entry = doc.data();
                 const [date, time] = entry.timestamp.split(', ');
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${index + 1}</td>
+                    <td>${20 - index}</td>
                     <td>${date}</td>
                     <td>${time}</td>
                     <td>${entry.content}</td>
                 `;
-                tbody.appendChild(row);
+                tbody.insertBefore(row, tbody.firstChild); // Insert each new row at the top of tbody
 
                 index++;
-            }
+            });
         }
     } catch (error) {
         console.error('Error fetching documents:', error);
