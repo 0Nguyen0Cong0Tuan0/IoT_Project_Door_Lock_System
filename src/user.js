@@ -60,7 +60,7 @@ window.addEventListener('load', async () => {
 
         const validPattern = /^[0-9a-dA-D]{1,9}$/;
         if (!validPattern.test(lockPassword)) {
-            alert('Invalid password. Only 1-9 characters are allowed, and valid characters are 0-9, a-d, or A-D.');
+            alert('Invalid password. The valid characters are 0-9, a-d, or A-D.');
             return;
         }
 
@@ -171,6 +171,24 @@ export async function updateToggleButton(userData) {
     }
 }
 
+// Update the toggle button - message from ESP32
+export async function updateToggleButtonLock(userData) {
+    const toggleButton = document.getElementById("toggle-lock");
+    const stateOfLockDiv = document.querySelector(".stateOfLock");
+    const stateOfLockTextDiv = document.querySelector(".stateOfLockText");
+
+
+    if (stateOfLockDiv.classList.contains("stateLock")) {
+        const content = "[STATE]_Your door is locking";
+        // Switch to "Block" state
+        stateOfLockDiv.classList.remove("stateOpen");
+        stateOfLockDiv.classList.add("stateLock");
+        stateOfLockTextDiv.classList.remove("textOpen");
+        stateOfLockTextDiv.classList.add("textLock");
+        toggleButton.textContent = "OPEN?"; // Update button text
+    }
+}
+
 
 // ------------------------------------------------ SAVE HISTORY SECTION ------------------------------------------------ //
 // Warning history
@@ -193,6 +211,18 @@ export async function addOpenHistory(userData) {
     const newHistoryEntry = {
         timestamp: new Date().toLocaleString(),
         content: '[STATE]_Your door is opening.'
+    };
+
+    await addDoc(historyRef, newHistoryEntry);
+    console.log("History entry added for lock state change.");
+}
+
+export async function addBlockHistory(userData) {
+    // Add history entry for state change
+    const historyRef = collection(db, `history-${userData.uid}`);
+    const newHistoryEntry = {
+        timestamp: new Date().toLocaleString(),
+        content: '[STATE]_Your door is locked.'
     };
 
     await addDoc(historyRef, newHistoryEntry);
@@ -301,7 +331,6 @@ document.querySelector('.history-access-btn').addEventListener('click', async ()
 });
 
 // ------------------------------------------------ AUTO LOCK FEATURE ------------------------------------------------ //
-
 document.addEventListener('DOMContentLoaded', function() {
     const autoLockToggleBtn = document.getElementById('auto-lock-toggle');
 

@@ -79,6 +79,8 @@ signIn.addEventListener('click', (event) => {
 
     const auth = getAuth();
 
+    // This line stores the user's unique ID (user.uid) in the browser's localStorage under the key 'loggedInUserId'. This allows the web application to remember which user is logged in, even after a page refresh.
+
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
         showMessage('Login is successful', 'signInMessage');

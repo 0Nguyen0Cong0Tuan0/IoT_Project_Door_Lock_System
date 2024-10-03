@@ -1,5 +1,5 @@
 import { sendWarningEmailNotification, sendPushWarningNotification, sendOTPNotification } from './emailnoti.js'; // Import the function
-import { fetchUserData, addWarningHistory, addOpenHistory, updateToggleButton, addOTPHistory } from './user.js';
+import { fetchUserData, addWarningHistory, addOpenHistory, addBlockHistory, updateToggleButton, updateToggleButtonLock, addOTPHistory } from './user.js';
 
 let client;
 
@@ -94,6 +94,19 @@ function onMessageArrived(message) {
                 addOpenHistory(userData);
                 updateToggleButton(userData);
                 console.log("OPEN");
+            }
+        });
+    }
+
+    if (payload.toLowerCase() === 'block') {
+        console.log("The door is bloced...");
+
+        // Fetch user data to send the email
+        fetchUserData().then(userData => {
+            if (userData) {
+                addBlockHistory(userData);
+                updateToggleButtonLock(userData);
+                console.log("LOCK");
             }
         });
     }
